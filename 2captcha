@@ -4,7 +4,7 @@ var c = "";
 var idcaptcha = "";
 var captchakey = "";
 var key = "bc382dda3db928e28b90e736a3731201";
-var step = 0;
+var step = -1;
 var ckey = "";
 
 function toDataURL(url, callback) {
@@ -93,6 +93,13 @@ function getId(id){
   return id.substr(3,100);
 }
 setInterval(function(){
+  if(step==-1){
+    if(document.getElementById("free_play_form_button").style.display == "block"){
+      step = 0;
+    }else{
+      console.log(step);
+    }
+  }
   	if(a==""){
     	if(step==0){
     	
