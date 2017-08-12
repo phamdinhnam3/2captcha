@@ -7,20 +7,25 @@ var key = "bc382dda3db928e28b90e736a3731201";
 var step = -1;
 var ckey = "";
 
-function toDataURL(url, callback) {
-  var xhr = new XMLHttpRequest();
-  xhr.onload = function() {
-    var reader = new FileReader();
-    reader.onloadend = function() {
-      callback(reader.result);
-    }
-    reader.readAsDataURL(xhr.response);
+function toDataURL(src, callback, outputFormat) {
+  var img = new Image();
+  img.crossOrigin = 'Anonymous';
+  img.onload = function() {
+    var canvas = document.createElement('CANVAS');
+    var ctx = canvas.getContext('2d');
+    var dataURL;
+    canvas.height = this.naturalHeight;
+    canvas.width = this.naturalWidth;
+    ctx.drawImage(this, 0, 0);
+    dataURL = canvas.toDataURL(outputFormat);
+    callback(dataURL);
   };
-  xhr.open('GET', url);
-  xhr.responseType = 'blob';
-  xhr.send();
+  img.src = src;
+  if (img.complete || img.complete === undefined) {
+    img.src = "data:image/png;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+    img.src = src;
+  }
 }
-
 
 
 
@@ -68,7 +73,7 @@ function getCap(id){
           captchakey = request.responseText;
       }
   }
-    request.open("GET", "http://2captcha.com/res.php?key="+key+"&action=get&id="+id);
+    request.open("GET", "https://2captcha.com/res.php?key="+key+"&header_acao=1&action=get&id="+id);
     request.send();
 }
 function sendCap(url){
@@ -94,7 +99,7 @@ function getId(id){
 }
 setInterval(function(){
   if(step==-1){
-    if(document.getElementById("free_play_form_button").style.display == "block"){
+    if(document.getElementById("free_play_form_button").style.display != "none"){
       step = 0;
     }else{
       console.log(step);
@@ -104,10 +109,15 @@ setInterval(function(){
     	if(step==0){
     	
 			a = document.getElementById("captchasnet_free_play_captcha").getElementsByTagName("img")[0].src;
+			
 			console.log(a);
-			toDataURL(a, function(dataUrl) {
-        c = dataUrl;
-      })
+			toDataURL(
+        a,
+        function(dataUrl) {
+          c = dataUrl;
+        }
+      )
+		
 			//convertImgToBase64(a);
     	}
 	}else{
@@ -124,16 +134,24 @@ setInterval(function(){
         	if(b!=""){
         	  if(b.indexOf("OK")!=-1){
         	    idcaptcha = getId(b);
+        	    console.log(idcaptcha);
         	    step =2;
         	  }
         	}
         }
       if(step == 2){
-        if(captchakey.indexOf("OK") == -1){
-          captchakey = getCap(idcaptcha);
-        }else{
+        getCap(idcaptcha);
+        if(captchakey.indexOf("OK") != -1){
           ckey = getId(captchakey);
+          console.log(ckey);
+          document.getElementsByClassName("captchasnet_captcha_input_box")[0].value = ckey;;
           step = 3;
+        }
+      }
+      if(step == 3){
+        if(document.getElementById("free_play_form_button").value != ""){
+          document.getElementById("free_play_form_button").click();
+          step = 4;
         }
       }
     }
