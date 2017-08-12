@@ -1,8 +1,25 @@
 var a = "";
 var b = "";
 var c = "";
+var idcaptcha = "";
+var captchakey = "";
 var key = "bc382dda3db928e28b90e736a3731201";
 var step = 0;
+var ckey = "";
+
+function toDataURL(url, callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.onload = function() {
+    var reader = new FileReader();
+    reader.onloadend = function() {
+      callback(reader.result);
+    }
+    reader.readAsDataURL(xhr.response);
+  };
+  xhr.open('GET', url);
+  xhr.responseType = 'blob';
+  xhr.send();
+}
 
 
 
@@ -12,6 +29,7 @@ function convertImgToBase64(url)
     var canvas = document.createElement('CANVAS');
     img = document.createElement('img'),
     img.src = url;
+    console.log(url);
     img.onload = function()
     {
         canvas.height = img.height;
@@ -39,6 +57,20 @@ function dataURItoBlob(dataURI) {
     }
     return new Blob([ia], {type: 'image/png'});
 }
+function getCap(id){
+ 
+
+    var request = new XMLHttpRequest();
+    
+
+  request.onreadystatechange = function() {//Call a function when the state changes.
+      if(request.readyState == XMLHttpRequest.DONE && request.status == 200) {
+          captchakey = request.responseText;
+      }
+  }
+    request.open("GET", "http://2captcha.com/res.php?key="+key+"&action=get&id="+id);
+    request.send();
+}
 function sendCap(url){
  
 var blob = dataURItoBlob(url);
@@ -57,24 +89,45 @@ fd.append("file", blob);
     request.open("POST", "https://2captcha.com/in.php?key="+key+"&header_acao=1");
     request.send(fd);
 }
-
+function getId(id){
+  return id.substr(3,100);
+}
 setInterval(function(){
   	if(a==""){
     	if(step==0){
+    	
 			a = document.getElementById("captchasnet_free_play_captcha").getElementsByTagName("img")[0].src;
-			convertImgToBase64(a);
+			console.log(a);
+			toDataURL(a, function(dataUrl) {
+        c = dataUrl;
+      })
+			//convertImgToBase64(a);
     	}
 	}else{
     	
     	if(step==0){
     	    if(c!=""){
+    	      console.log(c);
     	      sendCap(c);
             step = 1;
     	    }
         	
         }
     	if(step == 1 ){
-        	alert(b);
+        	if(b!=""){
+        	  if(b.indexOf("OK")!=-1){
+        	    idcaptcha = getId(b);
+        	    step =2;
+        	  }
+        	}
         }
+      if(step == 2){
+        if(captchakey.indexOf("OK") == -1){
+          captchakey = getCap(idcaptcha);
+        }else{
+          ckey = getId(captchakey);
+          step = 3;
+        }
+      }
     }
-},5000);
+},1000);
