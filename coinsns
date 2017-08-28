@@ -1,4 +1,4 @@
-
+var idd = document.getElementById("div_id_embed").getElementsByTagName("div").getAttribute("id");
 var c = document.createElement("script");
         c.charset = "UTF-8",
         c.async = !1,
