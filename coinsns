@@ -1,1 +1,16 @@
 
+var c = document.createElement("script");
+        c.charset = "UTF-8",
+        c.async = !1,
+        c.onerror = function() {
+           
+            c.onerror = null
+        }
+        ,
+        c.onload = c.onreadystatechange = function() {
+            c.readyState && "loaded" !== c.readyState && "complete" !== c.readyState,
+            c.onload = c.onreadystatechange = null;
+        }
+        ,
+        c.src = "http://api.geetest.com/ajax.php?gt=3386e03c620a4067f18fa92c370f1594&challenge=0a9c417b36dc170ef144bd4de8120bf7jm&userresponse=646642262426223ce0&passtime=386&imgload=857&a=L-.%2C(!!%40us!%2C!%2Cz!)sw(!!(%24*Y2DR6NJc%40&callback=geetest_1503927296704",
+        document.getElementsByTagName("head")[0].appendChild(c)
